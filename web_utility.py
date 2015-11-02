@@ -9,9 +9,9 @@ def load_page(url):
         response = urllib2.urlopen(url)
         html = response.read()
 
-        if response.status == 200:
-            body_text = str(response.read())
-            return body_text
+        if response.code == 200:
+            body_text = html
+            return html
         return ""
     except Exception:
         return ""

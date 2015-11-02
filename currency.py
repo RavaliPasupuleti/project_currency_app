@@ -5,7 +5,7 @@ import web_utility
 def convert(amount, home_currency_code, location_currency_code):
 
     urlString = "https://www.google.com/finance/converter?a="+str(amount)+"&from="+home_currency_code+"&to="+location_currency_code
-    #print(urlString)
+    print(urlString)
     result = web_utility.load_page(urlString)
 
     try :
