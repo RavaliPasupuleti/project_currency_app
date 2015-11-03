@@ -45,16 +45,28 @@ class AppUI(App):
     def change_state(self, state_code):
 
         if self.isCurrencyUpdatedFlag == False:
+            print("Flag not updated")
             return
-        """ handle change of spinner selection, output result to label widget """
-        """self.root.ids.output_label.text = STATES[state_code]"""
-        print("State Code"+state_code)
         newCountryTupple = currency.getDetails(state_code)
-        self.fromCountryTupple = newCountryTupple
-        self.getCurrencyConversion()
-        timeNow = datetime.datetime.now().strftime ("%H:%M:%S")
-        self.root.ids.trip_detail_info.text = "Updated at \n"+timeNow
+
+        print(newCountryTupple)
         print(self.fromCountryTupple)
+
+        if (self.fromCountryTupple and newCountryTupple[1] == self.fromCountryTupple[1]):
+             self.conversionfactor = 1
+             self.revConversionFactor = 1
+             return
+        if (newCountryTupple[1] == self.homeCountryTupple[1]):
+            self.homeCountryTupple = newCountryTupple
+            self.fromCountryTupple = newCountryTupple
+            self.conversionfactor = 1
+            self.revConversionFactor = 1
+        else:
+            self.fromCountryTupple = newCountryTupple
+            self.getCurrencyConversion()
+            timeNow = datetime.datetime.now().strftime ("%H:%M:%S")
+            self.root.ids.trip_detail_info.text = "Updated at \n"+timeNow
+            print(self.fromCountryTupple)
 
     def validateConfig(self):
         locations = self.locations
@@ -120,10 +132,9 @@ class AppUI(App):
             self.root.ids.update_currency.disabled = True
             self.root.ids.from_country_currency_amount.focus = True
             self.homeCountryTupple = currency.getDetails(self.root.ids.home_country.text)
-            self.fromCountryTupple = currency.getDetails(self.current_date_country)
+            #self.fromCountryTupple = currency.getDetails(self.current_date_country)
             self.root.ids.state_selection.text = self.details.current_country(self.today_date)
-            print(self.homeCountryTupple[1])
-            print(self.fromCountryTupple[1])
+
 
     def getCurrencyConversion(self):
         self.conversionfactor = float(currency.convert(1,self.homeCountryTupple[1],self.fromCountryTupple[1]))
