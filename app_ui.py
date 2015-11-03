@@ -9,11 +9,6 @@ import trip
 import datetime
 
 
-__author__ = 'Lindsay Ward'
-STATES = {'QLD': "Queensland", 'NSW': "New South Wales", 'VIC': "Victoria", 'WA': "Western Australia",
-          'TAS': "Tasmania", 'NT': "Northern Territory", 'SA': "South Australia", 'ACT': "Canberra",
-          'NQ': "Cowboys!", 'NZ': "New Zealand"}
-
 
 class AppUI(App):
 
@@ -22,11 +17,12 @@ class AppUI(App):
     validState = False
     today_date = ""
     locations = []
-    conversionfactor = 21.0
-    revConversionFactor = 100.22
+    conversionfactor = 1
+    revConversionFactor = 1
     fromCountryTupple = []
     homeCountryTupple = []
     current_date_country = ""
+    isCurrencyUpdatedFlag = False
 
     details = trip.Details(locations)
 
@@ -47,6 +43,9 @@ class AppUI(App):
         return self.root
 
     def change_state(self, state_code):
+
+        if self.isCurrencyUpdatedFlag == False:
+            return
         """ handle change of spinner selection, output result to label widget """
         """self.root.ids.output_label.text = STATES[state_code]"""
         print("State Code"+state_code)
@@ -112,6 +111,7 @@ class AppUI(App):
         self.validState = True
 
     def button_pressed(self, button):
+        self.isCurrencyUpdatedFlag = True
         if self.validState:
             print('app: ' + str(self))  # this is the app object
             print(self.details.current_country(self.today_date))
