@@ -83,7 +83,7 @@ class Details:
 
             list_of_locations = self.locations
             if len(list_of_locations) != 0:
-                for each_trip in list_of_locationss:
+                for each_trip in list_of_locations:
                     # print(each_trip)
 
                     each_trip_start_date = each_trip[1]
@@ -93,7 +93,7 @@ class Details:
                     each_trip_end_date_array = each_trip_end_date.split('/')
 
                     each_trip_start_date_tuple = (int(each_trip_start_date_array[0]), int(each_trip_start_date_array[1]), int(each_trip_start_date_array[2]))
-                    each_trip_end_date_uple = (int(each_trip_end_date_array[0]), int(each_trip_end_date_array[1]), int(each_trip_end_date_array[2]))
+                    each_trip_end_date_tuple = (int(each_trip_end_date_array[0]), int(each_trip_end_date_array[1]), int(each_trip_end_date_array[2]))
 
                     scheduled_trip_start_date_tuple = (start_year, start_month, start_day)
                     scheduled_trip_end_date_tuple = (end_year, end_month, end_day)
@@ -105,7 +105,7 @@ class Details:
                     if each_trip_start_date_tuple < scheduled_trip_end_date_tuple <= each_trip_end_date_tuple:
                         raise Error("Date alreday present in Trip Schedule. \n Trip Details :  " + str(each_trip))
 
-                    if scheduled_trip_start_date_tupple < each_trip_start_date_tuple  and scheduled_trip_end_date_tuple > each_trip_end_date_tuple:
+                    if scheduled_trip_start_date_tuple < each_trip_start_date_tuple  and scheduled_trip_end_date_tuple > each_trip_end_date_tuple:
                         raise Error("Date alreday present in Trip Schedule. \n Trip Details :  " + str(each_trip))
 
 
@@ -152,7 +152,7 @@ class Details:
                     start_date_array = each_trip_start_date.split('/')
                     end_date_array = each_trip_end_date.split('/')
 
-                    start_date_tuple = (int(start_date_array[0]), int(start_date_array[1]), int(start_date_Array[2]))
+                    start_date_tuple = (int(start_date_array[0]), int(start_date_array[1]), int(start_date_array[2]))
                     end_date_tuple = (int(end_date_array[0]), int(end_date_array[1]), int(end_date_array[2]))
 
                     if start_date_tuple < date_string_tuple < end_date_tuple:
