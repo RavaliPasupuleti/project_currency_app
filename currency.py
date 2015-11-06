@@ -6,7 +6,7 @@ def convert(amount, home_currency_code, location_currency_code):
 
     url_string = "https://www.google.com/finance/converter?a="+str(amount)+"&from="+home_currency_code+"&to="+location_currency_code
     print(url_string)
-    result = web_utility.load_page(urlString)
+    result = web_utility.load_page(url_string)
 
     try :
         index_of_matched_data = result.index('<span class=bld>')
