@@ -1,8 +1,8 @@
 import currency
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.properties import string_property
-from kivy.properties import list_property
+from kivy.properties import StringProperty
+from kivy.properties import ListProperty
 from functools import partial
 
 import trip
@@ -12,8 +12,8 @@ import datetime
 
 class AppUI(App):
 
-    current_state = string_property()
-    state_codes = list_property()
+    current_state = StringProperty()
+    state_codes = ListProperty()
     valid_state = False
     current_date = ""
     locations = []
@@ -29,7 +29,7 @@ class AppUI(App):
     def build(self):
         """ build Kivy app from the kv file """
         self.title = "Foreign Exchange Calculator"
-        self.root = Builder.load_file('gui.kv')
+        self.root = Builder.load_file('gui')
         self.validate_config()
         # self.state_codes = sorted(STATES.keys())
         # self.current_state = self.state_codes[0]
@@ -95,7 +95,7 @@ class AppUI(App):
                     print ""
                     self.state_codes.append(each_line_tuple_split_country)
                     self.valid_state = False
-                    details.add(each_line_tuple_split_country, each_line_tuple_split[1].replace("\n", ""), eachLineTuppleSplit[2].replace("\n",""))
+                    details.add(each_line_tuple_split_country, each_line_tuple_split[1].replace("\n", ""), each_line_tuple_split[2].replace("\n",""))
 
                 else:
                     self.root.ids.trip_detail_info.text = "Invalid country name \n " + each_line_tuple_split_country
@@ -125,14 +125,14 @@ class AppUI(App):
         self.is_currency_updated_flag = True
         if self.valid_state:
             print('app: ' + str(self))  # this is the app object
-            print(self.details.current_country(self.today_date))
+            print(self.details.current_country(self.current_date))
             self.root.ids.home_country_currency_amount.disabled = False
             self.root.ids.from_country_currency_amount.disabled = False
             self.root.ids.update_currency.disabled = True
             self.root.ids.from_country_currency_amount.focus = True
             self.home_country_tuple = currency.get_details(self.root.ids.home_country.text)
             #self.from_country_tuple = currency.get_details(self.current_date_country)
-            self.root.ids.state_selection.text = self.details.current_country(self.today_date)
+            self.root.ids.state_selection.text = self.details.current_country(self.current_date)
 
 
     def get_currency_conversion(self):
