@@ -1,8 +1,8 @@
 import currency
 from kivy.app import App
 from kivy.lang import Builder
-from kivy.properties import StringProperty
-from kivy.properties import ListProperty
+from kivy.properties import string_property
+from kivy.properties import list_property
 from functools import partial
 
 import trip
@@ -12,17 +12,17 @@ import datetime
 
 class AppUI(App):
 
-    current_state = StringProperty()
-    state_codes = ListProperty()
-    validState = False
-    today_date = ""
+    current_state = string_property()
+    state_codes = list_property()
+    valid_state = False
+    current_date = ""
     locations = []
-    conversionfactor = 1
-    revConversionFactor = 1
-    fromCountryTupple = []
-    homeCountryTupple = []
+    conversion_factor = 1
+    reverse_conversion_factor = 1
+    from_country_tuple = []
+    home_cuntry_tuple = []
     current_date_country = ""
-    isCurrencyUpdatedFlag = False
+    is_currency_updated_flag = False
 
     details = trip.Details(locations)
 
@@ -30,126 +30,125 @@ class AppUI(App):
         """ build Kivy app from the kv file """
         self.title = "Foreign Exchange Calculator"
         self.root = Builder.load_file('gui.kv')
-        self.validateConfig()
+        self.validate_config()
         # self.state_codes = sorted(STATES.keys())
         # self.current_state = self.state_codes[0]
-        self.root.ids.home_country_currency_amount.bind(on_text_validate=partial(self.enterPressed,"A"))
-        self.root.ids.from_country_currency_amount.bind(on_text_validate=partial(self.enterPressed,"B"))
+        self.root.ids.home_country_currency_amount.bind(on_text_validate=partial(self.enter_pressed,"A"))
+        self.root.ids.from_country_currency_amount.bind(on_text_validate=partial(self.enter_pressed,"B"))
 
-        self.root.ids.home_country_currency_amount.bind(focus=partial(self.onFocus,"A"))
-        self.root.ids.from_country_currency_amount.bind(focus=partial(self.onFocus,"B"))
+        self.root.ids.home_country_currency_amount.bind(focus=partial(self.on_focus, "A"))
+        self.root.ids.from_country_currency_amount.bind(focus=partial(self.on_focus, "B"))
 
 
         return self.root
 
     def change_state(self, state_code):
 
-        if self.isCurrencyUpdatedFlag == False:
+        if self.is_currency_updated_flag == False:
             print("Flag not updated")
             return
-        newCountryTupple = currency.getDetails(state_code)
+        new_country_tuple = currency.get_details(state_code)
 
-        print(newCountryTupple)
-        print(self.fromCountryTupple)
+        print(new_country_tuple)
+        print(self.from_country_tuple)
 
-        if (self.fromCountryTupple and newCountryTupple[1] == self.fromCountryTupple[1]):
-             self.conversionfactor = 1
-             self.revConversionFactor = 1
+        if (self.from_country_tuple and new_country_tuple[1] == self.from_country_tuple[1]):
+             self.conversion_factor = 1
+             self.reverse_conversion_factor = 1
              return
-        if (newCountryTupple[1] == self.homeCountryTupple[1]):
-            self.homeCountryTupple = newCountryTupple
-            self.fromCountryTupple = newCountryTupple
-            self.conversionfactor = 1
-            self.revConversionFactor = 1
+        if (new_country_tuple[1] == self.home_country_tuple[1]):
+            self.home_country_tuple = new_country_tuple
+            self.from_country_tuple = new_country_tuple
+            self.conversion_factor = 1
+            self.reverse_conversion_factor = 1
         else:
-            self.fromCountryTupple = newCountryTupple
-            self.getCurrencyConversion()
-            timeNow = datetime.datetime.now().strftime ("%H:%M:%S")
-            self.root.ids.trip_detail_info.text = "Updated at \n"+timeNow
-            print(self.fromCountryTupple)
+            self.from_country_tuple = new_country_tuple
+            self.get_currency_conversion()
+            current_time = datetime.datetime.now().strftime ("%H:%M:%S")
+            self.root.ids.trip_detail_info.text = "Updated at \n" + current_time
+            print(self.from_country_tuple)
 
-    def validateConfig(self):
+    def validate_config(self):
         locations = self.locations
         details = self.details
 
 
         text_file = open("config.txt", "r")
-        # fetching a list of values
+        # getting the trip details
         lines = text_file.readlines()
-        #Source : http://stackoverflow.com/questions/3277503/python-read-file-line-by-line-into-array
         print(lines[0])
         country = lines[0].replace('\n','')
-        tuple = currency.getDetails(country)
+        tuple = currency.get_details(country)
         if len(tuple) == 0:
-            self.root.ids.trip_detail_info.text = "Invalid country name \n "+country
+            self.root.ids.trip_detail_info.text = "Invalid country name \n " + country
             return
 
         try:
 
-            for eachLine in lines[1:len(lines)]:
+            for each_line in lines[1:len(lines)]:
 
-                eachLineTuppleSplit = eachLine.split(",")
-                eachLineTuppleSplitCountry = eachLineTuppleSplit[0].replace("\n","")
-                resultTupple = currency.getDetails(eachLineTuppleSplitCountry)
+                each_line_tuple_split = each_line.split(",")
+                each_line_tuple_split_country = each_line_tuple_split[0].replace("\n","")
+                result_tuple = currency.get_details(each_line_tuple_split_country)
 
-                if len(resultTupple) != 0:
+                if len(result_tuple) != 0:
                     print ""
-                    self.state_codes.append(eachLineTuppleSplitCountry)
-                    self.validState = False
-                    details.add(eachLineTuppleSplitCountry,eachLineTuppleSplit[1].replace("\n",""),eachLineTuppleSplit[2].replace("\n",""))
+                    self.state_codes.append(each_line_tuple_split_country)
+                    self.valid_state = False
+                    details.add(each_line_tuple_split_country, each_line_tuple_split[1].replace("\n", ""), eachLineTuppleSplit[2].replace("\n",""))
 
                 else:
-                    self.root.ids.trip_detail_info.text = "Invalid country name \n "+eachLineTuppleSplitCountry
-                    self.validState = False
+                    self.root.ids.trip_detail_info.text = "Invalid country name \n " + each_line_tuple_split_country
+                    self.valid_state = False
                     return
 
-                print(eachLineTuppleSplitCountry)
+                print(each_line_tuple_split_country)
 
-        except trip.Error as detailsError:
-            print("Error :"+detailsError.msg)
-            self.root.ids.trip_detail_info.text = "Invalid trip details \n "+detailsError.msg
-            self.validState = False
+        except trip.Error as details_error:
+            print("Error :"+ details_error.msg)
+            self.root.ids.trip_detail_info.text = "Invalid trip details \n " + details_error.msg
+            self.valid_state = False
             return
 
 
         self.root.ids.home_country.text = tuple[0]
         self.root.ids.trip_detail_info.text = "trip details accepted"
 
-        self.today_date = datetime.datetime.now().strftime ("%Y/%m/%d")
-        self.root.ids.date_today.text = "Today's Date is \n"+self.today_date
-        self.current_date_country = details.current_country(self.today_date)
-        self.root.ids.current_trip_location.text = "Current Trip Location \n"+self.current_date_country
+        self.current_date = datetime.datetime.now().strftime ("%Y/%m/%d")
+        self.root.ids.current_date.text = "Today's Date is \n"+self.current_date
+        self.current_date_country = details.current_country(self.current_date)
+        self.root.ids.current_trip_location.text = "Current Trip Location \n" + self.current_date_country
 
-        self.validState = True
+        self.valid_state = True
 
     def button_pressed(self, button):
-        self.isCurrencyUpdatedFlag = True
-        if self.validState:
+        self.is_currency_updated_flag = True
+        if self.valid_state:
             print('app: ' + str(self))  # this is the app object
             print(self.details.current_country(self.today_date))
             self.root.ids.home_country_currency_amount.disabled = False
             self.root.ids.from_country_currency_amount.disabled = False
             self.root.ids.update_currency.disabled = True
             self.root.ids.from_country_currency_amount.focus = True
-            self.homeCountryTupple = currency.getDetails(self.root.ids.home_country.text)
-            #self.fromCountryTupple = currency.getDetails(self.current_date_country)
+            self.home_country_tuple = currency.get_details(self.root.ids.home_country.text)
+            #self.from_country_tuple = currency.get_details(self.current_date_country)
             self.root.ids.state_selection.text = self.details.current_country(self.today_date)
 
 
-    def getCurrencyConversion(self):
-        self.conversionfactor = float(currency.convert(1,self.homeCountryTupple[1],self.fromCountryTupple[1]))
-        self.revConversionFactor = float(currency.convert(1,self.fromCountryTupple[1],self.homeCountryTupple[1]))
-        print(self.conversionfactor)
+    def get_currency_conversion(self):
+        self.conversion_factor = float(currency.convert(1, self.home_country_tuple[1], self.from_country_tuple[1]))
+        self.reverse_conversion_factor = float(currency.convert(1, self.from_country_tuple[1], self.home_country_tuple[1]))
+        print(self.conversion_factor)
 
 
-    def enterPressed(self, gid,value):
-        print('User pressed enter in',gid,value.text)
+    def enter_pressed(self, gid, value):
+        print('User pressed enter in', gid, value.text)
         if (gid == "A"):
             try:
                 if len(value.text) > 0 :
                     val = float(value.text)
-                    self.root.ids.from_country_currency_amount.text = str(self.conversionfactor*val)
-                    self.root.ids.trip_detail_info.text = self.homeCountryTupple[1]+"("+self.homeCountryTupple[2].replace("\r","")+") to "+self.fromCountryTupple[1]+" ("+self.fromCountryTupple[2].replace("\r","")+")"
+                    self.root.ids.from_country_currency_amount.text = str(self.conversion_factor * val)
+                    self.root.ids.trip_detail_info.text = self.home_country_tuple[1] + "(" + self.home_country_tuple[2].replace("\r","") + ") to " + self.from_country_tuple[1] + " (" + self.from_country_tuple[2].replace("\r","") + ")"
 
 
             except ValueError:
@@ -160,9 +159,9 @@ class AppUI(App):
             try:
                 if len(value.text) > 0 :
                     val = float(value.text)
-                    print(self.revConversionFactor*val)
-                    self.root.ids.home_country_currency_amount.text = str(self.revConversionFactor*val)
-                    self.root.ids.trip_detail_info.text = self.fromCountryTupple[1]+"("+self.fromCountryTupple[2].replace("\r","")+") to "+self.homeCountryTupple[1]+" ("+self.homeCountryTupple[2].replace("\r","")+")"
+                    print(self.reverse_conversion_factor * val)
+                    self.root.ids.home_country_currency_amount.text = str(self.reverse_conversion_factor * val)
+                    self.root.ids.trip_detail_info.text = self.from_country_tuple[1] + "(" + self.from_country_tuple[2].replace("\r", "") + ") to " + self.home_country_tuple[1] + " (" + self.home_country_tuple[2].replace("\r", "") + ")"
 
 
             except ValueError:
@@ -171,21 +170,19 @@ class AppUI(App):
 
 
 
-    def onFocus(self,gid,value,isFocus):
-        print('User Focuss enter in',isFocus,id,value)
-        if ((gid == "A") and (isFocus)):
+    def on_focus(self, gid, value, is_focus):
+        print('User Focuss enter in', is_focus, id, value)
+        if ((gid == "A") and (is_focus)):
             print("A IS FOCUS")
             self.root.ids.trip_detail_info.text = ""
 
-        if ((gid == "B") and (isFocus)):
+        if ((gid == "B") and (is_focus)):
             print("B IS FOCUS")
             self.root.ids.trip_detail_info.text = ""
 
 
     def insert_text(self, substring, from_undo=False):
         from_undo = True
-
-
 
 
 AppUI().run()
